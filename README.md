@@ -21,18 +21,16 @@ this is some bat code i use for extracting icons to a cache folder.
 
 
 echo this is used to extract icon file and create a text file to refere.
-echo ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-for /f "tokens=* delims=" %%f in ('dir /b/a-d /b *.exe *.lnk *.url') do (
+echo --------------------------------------------------------------------------------------------
   if not exist "%CachePath2%%%f.png.txt" (
     call "%ScriptPath2%\..\AddOn\IconExtract.exe" -extract "%BrowsePath2%%%f" "%CachePath2%%%f" -scale %size%
     echo|set /p= "%CachePath2%%%f.png" > "%CachePath2%%%f.png.txt"
   )
  )
-echo ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-echo.
+echo --------------------------------------------------------------------------------------------
 echo.
 echo extract all icons that are left.
-echo ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+echo --------------------------------------------------------------------------------------------
 for /f "tokens=* delims=" %%f in ('dir /b/a-d /b *') do (
   if not exist "%CachePath2%%%f.png.txt" (
     call "%ScriptPath2%\..\AddOn\IconExtract.exe" -extract "%BrowsePath2%%%f" "%SkinTemp2%\..\Custom Icons\%%~xf" -scale %size%
