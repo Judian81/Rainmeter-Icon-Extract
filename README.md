@@ -7,11 +7,17 @@ this is some bat code i use for extracting icons to a cache folder.
 //----------------------------------------------------------------------------------------------------
 
 %CachePath2% = "C:\somefolder\temp\C\another folder\"
+
 %ScriptPath2%\..\AddOn\IconExtract.exe = "this is the folder where IconExtract.exe is in."
+
 %BrowsePath2% = "the folder we work or browse in" like for example "C:\another folder\"
-%SkinTemp2%\..\Custom Icons\%%~xf.png = "save an icon for examle as pdf file. because all pdf files have the samen icon we save it in a folder like. .pdf.png"
+
+%SkinTemp2%\..\Custom Icons\%%~xf.png = "save an icon for examle as .pdf.png. we just have to extract it 1 time."
+
 %%f = "the file we give to make some txt reference for a png file. or make the png file it self."
+
 %%~xf = "this is only the extension of a file."
+
 
 //----------------------------------------------------------------------------------------------------
 
