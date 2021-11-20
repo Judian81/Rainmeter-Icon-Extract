@@ -8,3 +8,6 @@ this is the command line options:
 2. call IconExtract.exe -help
 
 
+still in development.
+
+PS: when all is done you can use this icons extractor for more that only rainmeter.
