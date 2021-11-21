@@ -1,21 +1,32 @@
 #include <iostream>
+#include <windows.h>
+#include <string>
+#include <fstream>
+#include <direct.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+
+//above ^ are official
+
+//#include <locale>
+
+//#include <codecvt>
 
 using namespace std;
 
-#include <Windows.h>
-#include <string>
+#include <shlwapi.h>
 #include <vector>
 #include <regex>
 #include <shlobj_core.h>
 #include <shellapi.h>
 #include <commoncontrols.h>
 #include <gdiplus.h>
-#include <fstream>
 #include <io.h>
 #include <msi.h>
 #pragma comment(lib,"Msi.lib")
 #pragma comment(lib, "gdiplus.lib")
-//#include <thread>
+#include <thread>
 
 #pragma pack(push, 2)
 typedef struct	// 16 bytes
@@ -112,6 +123,15 @@ std::string GetFileExtension(const std::string& FileName);
 std::string GetFileName(const string& s);
 std::string GetFullPath(const std::string& fname);
 
+DWORD GetModuleFileName(HMODULE hModule, LPSTR lpFilename, DWORD nSize);
+
+wstring ExePath() {
+	TCHAR buffer[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
+	return std::wstring(buffer).substr(0, pos);
+}
+
 int MsgBox(LPCWSTR toshow) {
 	int msgboxID = MessageBox(NULL, toshow, toshow, MB_DEFBUTTON2);
 
@@ -130,14 +150,15 @@ int MsgBox(LPCWSTR toshow) {
 	return msgboxID;
 }
 
-std::string GetFileExtension(const std::string& FileName)
+std::string GetFileExtension(const std::string& Extension)
 {
-	if (FileName.find_last_of(".") != std::string::npos)
-		return FileName.substr(FileName.find_last_of(".") + 1);
+	if (Extension.find_last_not_of(".") != std::string::npos)
+		return Extension.substr(Extension.find_last_of(".") + 1);
 	return "";
 }
 
 string GetFileName(const string& s) {
+
 	char sep = '/';
 	sep = '\\';
 	size_t i = s.rfind(sep, s.length());
@@ -157,8 +178,30 @@ std::string GetFullPath(const std::string& fname)
 		: fname.substr(0, pos);
 }
 
+std::wstring s2ws(const std::string& s) {
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
+
+std::string ws2s(const std::wstring& str) {
+	std::string s(str.begin(), str.end());
+	return s;
+}
+
+inline bool exists_test3(const std::string& name) {
+	struct stat buffer;
+	return (stat(name.c_str(), &buffer) == 0);
+}
+
 int main(int argc, char* argv[], char* envp[]) {
 
+	//std::wstring command1 = argv[1];
 	std::string command1 = argv[1];
 
 	if (command1 == "-help") {
@@ -173,13 +216,150 @@ int main(int argc, char* argv[], char* envp[]) {
 		std::cout << "the -scale can be from 16, 32, 48 to 256. sorry 64 and 128 is not possible.";
 		std::cout << "if you fill in 64 it will be 48. and if you fill in 128 it will be automaticly 256.";
 		std::cout << "\n";
-	}
-	std::string file1 = argv[2];
-	std::string file2 = argv[3];
-	std::string command2 = argv[4];
-	std::string scale1 = argv[5];
+	} else if (command1 == "-auto") {
 
-	if (command1 == "-extract") {
+		std::string makepath = ws2s(ExePath()) + "\\Temp\\";
+		_mkdir(makepath.c_str());
+
+		std::cout << endl << "temp directory is: " << makepath.c_str() << endl;
+		std::string file1 = argv[2];
+
+
+		std::cout << "file to extract: " + file1 << std::endl;
+
+		bool fileexist = exists_test3(file1);
+		std::cout << "--------------------------------------------------" << endl;
+		if (fileexist == 1) {
+			std::cout << "the file exist. go on with progres." << endl;
+			std::cout << "--------------------------------------------------" << endl;
+		}
+		else {
+			std::cout << "the file does not exist, cancel progres."  << endl;
+			std::cout << "--------------------------------------------------" << endl;
+			return 0;
+		}
+
+
+		std::string tempdirectory = GetFullPath(file1) + "\\";
+		std::cout << "directory of the file: " << tempdirectory << endl;
+
+		std::string driveletter = tempdirectory.substr(0, 1);
+		std::size_t position = tempdirectory.find(":") + 1;
+		std::string cachedir = tempdirectory.substr(position);
+		std::cout << "drive letter we are working with: " << driveletter << endl;
+		std::string totalcachepath = makepath + driveletter + cachedir;
+
+		std::string file2 = totalcachepath + GetFileName(file1) + "." + GetFileExtension(file1);
+
+		fileexist = exists_test3(file2 + ".png");
+
+		if (fileexist == 1) {
+			std::cout << "cache icon does exist, aborting mission." << endl;
+			return 0;
+		} 
+		else {
+			std::cout << "cache icon does not exist. trying to create one." << endl;
+		}
+
+		std::cout << "--------------------------------------------------" << endl;
+		for (int n = 4; n < totalcachepath.length(); n++) {
+			if (totalcachepath.substr(n, 1) == "\\") {
+				std::cout << totalcachepath.substr(0, n) << endl;
+				std::cout << "dir made: " <<_mkdir(totalcachepath.substr(0, n).c_str()) << endl;
+			};
+		}
+		std::cout << "--------------------------------------------------" << endl;
+
+		std::string textlink = file2 + ".png.txt";
+		std::string iconlink = file2 + ".png";
+
+		fileexist = exists_test3(textlink);
+
+		if (fileexist == 1) {
+			std::cout << "cache link does exist, aborting mission." << endl;
+			return 0;
+		}
+		else {
+			std::cout << "cache link does not exist. trying to create one." << endl;
+		}
+
+		ofstream myfile;
+		myfile.open(textlink);
+		myfile << iconlink;
+		myfile.close();
+
+		std::string command2 = "-scale";
+		int scale1 = 256;
+
+		//std::cout << "\n";
+		//std::cout << "the info you passed.";
+		//std::cout << "\n------------------------------------------------------------------------";
+		//std::cout << "\n";
+		//std::cout << "first command: " + command1;
+		//std::cout << "\n";
+		////the ™ is missing from this file printed to the console.
+		//std::cout << "filename: " + file1 << std::endl;
+		//std::cout << "save icon to: " + file2;
+		//std::cout << "\n";
+		//std::cout << "Second command: " + command2;
+		//std::cout << "\n";
+		//std::cout << "icon size is: " + std::to_string(scale1);
+		//std::cout << "\n------------------------------------------------------------------------";
+		//std::cout << "\n\n";
+
+		//get all info for extracting the icon we want.
+		Measure* measure = new Measure;
+
+		std::wstring wCachePath = s2ws(GetFullPath(file2));
+		measure->linkCache = wCachePath + L"\\";
+		measure->iconCache = wCachePath + L"\\";
+		measure->iconSize = EXLARGE;
+		measure->getIcon = true;
+		std::wstring wCacheName = s2ws(GetFileName(file1));
+		measure->property.name = wCacheName;
+		std::wstring wCacheExtension = s2ws(GetFileExtension(file1));
+		measure->property.ext = wCacheExtension;
+		measure->property.nameandext = wCacheName + L"." + wCacheExtension;
+		measure->property.wholepath = L"";
+		measure->useNewStyle = 1;
+		measure->allowNonstorage = false;
+		measure->property.path = s2ws(file1);
+		measure->filefrom = s2ws(file1);
+		measure->fileto = s2ws(file2);
+		measure->scaleto = scale1;
+		std::wstring wCachePathFrom = s2ws(GetFullPath(file1));
+		measure->fileInitDir = wCachePathFrom + L"\\";
+
+
+
+		std::cout << "all code was running without error." << endl;
+
+		if ((file1 != "") && (file2 != "")) {
+			GetIcon(measure, nullptr);
+		}
+		else {
+			std::cout << "error: type -help for more information.";
+		}
+
+		return 0;
+
+	} else if (command1 == "-extract") {
+
+
+		//std::wstring file1 = argv[2];
+		//std::wstring file2 = argv[3];
+		//std::wstring command2 = argv[4];
+		std::string file1 = argv[2];
+		std::string file2 = argv[3];
+		std::string command2 = argv[4];
+		int scale1 = atoi(argv[5]);
+		//int scale1 = std::stoi(argv[5]);
+		//int scale1 = _wtoi(argv[5]);
+
+		//std::wstring stemp = s2ws(file1);
+		//LPCWSTR result = stemp.c_str();
+
+		//MsgBox(result);
 
 		std::cout << "\n";
 		std::cout << "the info you passed.";
@@ -187,110 +367,54 @@ int main(int argc, char* argv[], char* envp[]) {
 		std::cout << "\n";
 		std::cout << "first command: " + command1;
 		std::cout << "\n";
-		std::cout << "icon from: " + file1;
-		std::cout << "\n";
+		//the ™ is missing from this file printed to the console.
+		std::cout << "filename: " + file1 << std::endl;
 		std::cout << "save icon to: " + file2;
 		std::cout << "\n";
 		std::cout << "Second command: " + command2;
 		std::cout << "\n";
-		std::cout << "icon size is: " + scale1;
+		std::cout << "icon size is: " + std::to_string(scale1);
 		std::cout << "\n------------------------------------------------------------------------";
 		std::cout << "\n\n";
-
-		//convert data to what we need to have.
-		//-----------------------------------------------------------------------
-		std::wstring filetemp1(file1.begin(), file1.end());
-		std::wstring filetemp2(file2.begin(), file2.end());
-		int scaletemp1 = atoi(scale1.c_str());
-		////-----------------------------------------------------------------------
-
-		std::cout << "\n";
-		std::cout << " all the info we still have afther converting information";
-		std::cout << "\n------------------------------------------------------------------------";
-		std::cout << "\n";
-		std::wcout << L"icon from: " + filetemp1;
-		std::cout << "\n";
-		std::wcout << L"icon to: " + filetemp2;
-		std::cout << "\n";
-		std::cout << "scale size: " + std::to_string(scaletemp1);
-		std::cout << "\n------------------------------------------------------------------------";
-		std::cout << "\n\n";
-
-		//make pointers to the info we have.
-		//-----------------------------------------------------------------------
-		std::wstring filefrom = filetemp1;
-		std::wstring fileto = filetemp2;
-		int* scaleto = &scaletemp1;
-		//-----------------------------------------------------------------------
-
-		std::cout << "\n";
-		std::cout << "---------------------the rest converted--------------------------";
-		std::cout << "\n";
-		std::wcout << L"filefrom: " + filefrom;
-		std::cout << "\n";
-		std::wcout << L"fileto: " + fileto;
-		std::cout << "\n";
-		std::cout << "scale: " + std::to_string(scaletemp1);
-		std::cout << "\n";
-		std::cout << "---------------------the rest converted ended--------------------------";
-		std::cout << "\n";
-
-		//-----------------------------------------------------------------------------
-		//we have to store some parrameters. in the hope i can use the code optiomal.
-		Measure* measure = new Measure;
-		//create the path were to stall the cache icons.
-		std::string sCachePath = GetFullPath(file2);
-		std::wstring wCachePath(sCachePath.begin(), sCachePath.end());
-		measure->iconCache = wCachePath + L"\\";
-		//set the icon size as big as we can
-		measure->iconSize = EXLARGE;
-		//wihtout this there will not be an icon saved at all.
-		measure->getIcon = true;
-		//put in the file name we need.
-		std::string sCacheName = GetFileName(file1);
-		std::wstring wCacheName(sCacheName.begin(), sCacheName.end());
-		measure->property.name = wCacheName;
-		//put in the extension.
-		std::string sCacheExtension = GetFileExtension(file1);
-		std::wstring wCacheExtension(sCacheExtension.begin(), sCacheExtension.end());
-		measure->property.ext = wCacheExtension;
-		//set the name and extension in one variable.
-		measure->property.nameandext = wCacheName + L"." + wCacheExtension;
 		
-		//this is the target file location ?!?!??!
+		//get all info for extracting the icon we want.
+		Measure* measure = new Measure;
+
+
+		std::wstring wCachePath = s2ws(GetFullPath(file2));
 		measure->linkCache = wCachePath + L"\\";
-
-
-		//create the path were to stall the cache icons.
-		std::string sCachePathFrom = GetFullPath(file1);
-		std::wstring wCachePathFrom(sCachePathFrom.begin(), sCachePathFrom.end());
+		measure->iconCache = wCachePath + L"\\";
+		measure->iconSize = EXLARGE;
+		measure->getIcon = true;
+		std::wstring wCacheName = s2ws(GetFileName(file1));
+		measure->property.name = wCacheName;
+        std::wstring wCacheExtension = s2ws(GetFileExtension(file1));
+		measure->property.ext = wCacheExtension;
+		measure->property.nameandext = wCacheName + L"." + wCacheExtension;
+		measure->property.wholepath = L"";
+		measure->useNewStyle = 1;
+		measure->allowNonstorage = false;
+		measure->property.path = s2ws(file1);
+		measure->filefrom = s2ws(file1);
+		measure->fileto = s2ws(file2);
+		measure->scaleto = scale1;
+		std::wstring wCachePathFrom = s2ws(GetFullPath(file1));
 		measure->fileInitDir = wCachePathFrom + L"\\";
 
+		//std::wcout << "\n";
+		//std::wcout << "the info you passed.";
+		//std::wcout << "\n------------------------------------------------------------------------" << endl;
+		//std::wcout << L"first wCachePath: " + wCachePath << endl;
+		//std::wcout << L"icon wCacheName: " + wCacheName << endl;
+		//std::wcout << L"save wChacheExtension: " + wCacheExtension << endl;
+		//std::wcout << L"Second wChachePathFrom: " + wCachePathFrom << endl;
+		//std::wcout << "\n------------------------------------------------------------------------" << endl;
+		//std::wcout << "\n\n";
 
-		//measure->getTarget = 1;
-
-		measure->useNewStyle = 1;
-		
-		
-		//this are my own parrameters. i think i am god. hahaha.
-		measure->filefrom = filefrom;
-		measure->fileto = fileto;
-		//i think i can disable this action. it is just for the best.
-		measure->scaleto = scaletemp1;
-
-
-		// can not be used if enabled.
-		//i do not know what this is meant for. so i disable it.
-		//measure->copyLink = 0;
-		measure->allowNonstorage = false;
-		//measure->fileInitDir = L"C:\\ProgramData\\Cool\\";
-		//measure->imgInitDir = L"C:\\ProgramData\\Cool\\Ow\\";
-		measure->property.wholepath = L"";
-		//----------------------------------------------------------------------------
+		//LPCWSTR lChacheName = wCacheName.c_str();
+		//MsgBox(lChacheName);
 
 		if ((file1 != "") && (file2 != "")) {
-			//this is the path from the file we want to extract the icon from.
-			measure->property.path = filefrom;
 			GetIcon(measure, nullptr);
 		} else {
 			std::cout << "error: type -help for more information.";
