@@ -200,10 +200,9 @@ inline bool exists_test3(const std::string& name) {
 }
 
 int main(int argc, char* argv[], char* envp[]) {
-
-	//std::wstring command1 = argv[1];
+		
 	std::string command1 = argv[1];
-
+	
 	if (command1 == "-help") {
 
 		std::cout << "\n";
@@ -216,12 +215,208 @@ int main(int argc, char* argv[], char* envp[]) {
 		std::cout << "the -scale can be from 16, 32, 48 to 256. sorry 64 and 128 is not possible.";
 		std::cout << "if you fill in 64 it will be 48. and if you fill in 128 it will be automaticly 256.";
 		std::cout << "\n";
-	} else if (command1 == "-auto") {
+	} else if (command1 == "-safe-ffmpeg-wrapper") {
+
+
+
+	} else if (command1 == "-create-cache-subfolders") {
+
+		std::cout << "---------------starting something--------------" << endl;
+		std::string file1 = argv[2];
+		std::cout << file1 << endl;
+		std::string makepath = ws2s(ExePath());
+		std::cout << makepath << endl;
+		std::string tempdirectory = file1;
+		std::cout << "directory of the file: " << tempdirectory << endl;
+
+		std::string driveletter = tempdirectory.substr(0, 1);
+		std::cout << driveletter << endl;
+		std::size_t position = tempdirectory.find(":") + 1;
+		std::cout << position << endl;
+		std::string cachedir = tempdirectory.substr(position);
+		std::cout << cachedir << endl;
+		std::cout << "drive letter we are working with: " << driveletter << endl;
+		std::string totalcachepath = makepath + "\\Temp\\" + driveletter + cachedir + ".png.txt";
+		std::cout << totalcachepath << endl;
+
+		//std::string file2 = totalcachepath + GetFileName(file1) + "." + GetFileExtension(file1);
+
+
+		std::string textlink = totalcachepath;
+		std::string iconlink = makepath + "\\folder.png";
+		std::cout << "---------------------------" << endl;
+		std::cout << textlink << endl;
+		std::cout << iconlink << endl;
+
+		ofstream myfile;
+		myfile.open(textlink);
+		myfile << iconlink;
+		myfile.close();
+
+	} else if (command1 == "-create-cache-path") {
+
+		std::string file1 = argv[2];
+		std::cout << file1 << endl;
+		std::string makepath = ws2s(ExePath()) + "\\Temp\\";
+		std::cout << makepath << endl;
+		std::string tempdirectory = file1;
+		std::cout << "directory of the file: " << tempdirectory << endl;
+
+		std::string driveletter = tempdirectory.substr(0, 1);
+		std::cout << driveletter << endl;
+		std::size_t position = tempdirectory.find(":") + 1;
+		std::cout << position << endl;
+		std::string cachedir = tempdirectory.substr(position);
+		std::cout << cachedir << endl;
+		std::cout << "drive letter we are working with: " << driveletter << endl;
+		std::string totalcachepath = makepath + driveletter + cachedir;
+		std::cout << totalcachepath << endl;
+
+		for (int n = 4; n < totalcachepath.length(); n++) {
+			if (totalcachepath.substr(n, 1) == "\\") {
+				std::cout << totalcachepath.substr(0, n) << endl;
+					std::cout << "dir made: " << _mkdir(totalcachepath.substr(0, n).c_str()) << endl;
+			};
+		}
+	} else if (command1 == "-auto-single") {
+		
+			std::string makepath = ws2s(ExePath()) + "\\Temp\\";
+			std::string returnnothing;
+			returnnothing = _mkdir(makepath.c_str());
+			std::string makepath2 = ws2s(ExePath()) + "\\Temp Icons\\";
+			returnnothing =_mkdir(makepath2.c_str());
+			//std::cout << endl << "temp directory is: " << makepath.c_str() << endl;
+			//std::cout << endl << "temp icons directory is: " << makepath2.c_str() << endl;
+
+			std::string file1 = argv[2];
+			std::cout << "file to extract: " + file1 << std::endl;
+			bool fileexist = exists_test3(file1);
+			std::cout << "--------------------------------------------------" << endl;
+			if (fileexist == 1) {
+				std::cout << "the file exist. go on with progres." << endl;
+				std::cout << "--------------------------------------------------" << endl;
+			}
+			else {
+				std::cout << "the file does not exist, cancel progres." << endl;
+				std::cout << "--------------------------------------------------" << endl;
+				return 0;
+			}
+
+			std::string tempdirectory = GetFullPath(file1) + "\\";
+			std::cout << "directory of the file: " << tempdirectory << endl;
+
+			std::string driveletter = tempdirectory.substr(0, 1);
+			std::size_t position = tempdirectory.find(":") + 1;
+			std::string cachedir = tempdirectory.substr(position);
+			std::cout << "drive letter we are working with: " << driveletter << endl;
+			std::string totalcachepath = makepath + driveletter + cachedir;
+
+			std::string file2 = totalcachepath + GetFileName(file1) + "." + GetFileExtension(file1);
+
+			fileexist = exists_test3(file2 + ".png");
+
+			if (fileexist == 1) {
+				std::cout << "cache icon does exist, aborting mission." << endl;
+				return 0;
+			}
+			else {
+				std::cout << "cache icon does not exist. trying to create one." << endl;
+			}
+
+			std::cout << "--------------------------------------------------" << endl;
+			for (int n = 4; n < totalcachepath.length(); n++) {
+				if (totalcachepath.substr(n, 1) == "\\") {
+					std::cout << totalcachepath.substr(0, n) << endl;
+					std::cout << "dir made: " << _mkdir(totalcachepath.substr(0, n).c_str()) << endl;
+				};
+			}
+			std::cout << "--------------------------------------------------" << endl;
+
+			std::string textlink = file2 + ".png.txt";
+			std::string iconlink = file2 + ".png";
+
+			fileexist = exists_test3(textlink);
+
+			if (fileexist == 1) {
+				std::cout << "cache link does exist, aborting mission." << endl;
+				return 0;
+			}
+			else {
+				std::cout << "cache link does not exist. trying to create one." << endl;
+			}
+
+			ofstream myfile;
+			myfile.open(textlink);
+			myfile << iconlink;
+			myfile.close();
+
+			std::string command2 = "-scale";
+			int scale1 = 256;
+
+			//std::cout << "\n";
+			//std::cout << "the info you passed.";
+			//std::cout << "\n------------------------------------------------------------------------";
+			//std::cout << "\n";
+			//std::cout << "first command: " + command1;
+			//std::cout << "\n";
+			////the ™ is missing from this file printed to the console.
+			//std::cout << "filename: " + file1 << std::endl;
+			//std::cout << "save icon to: " + file2;
+			//std::cout << "\n";
+			//std::cout << "Second command: " + command2;
+			//std::cout << "\n";
+			//std::cout << "icon size is: " + std::to_string(scale1);
+			//std::cout << "\n------------------------------------------------------------------------";
+			//std::cout << "\n\n";
+
+			//get all info for extracting the icon we want.
+			Measure* measure = new Measure;
+
+			std::wstring wCachePath = s2ws(GetFullPath(file2));
+			measure->linkCache = wCachePath + L"\\";
+			measure->iconCache = wCachePath + L"\\";
+			measure->iconSize = EXLARGE;
+			measure->getIcon = true;
+			std::wstring wCacheName = s2ws(GetFileName(file1));
+			measure->property.name = wCacheName;
+			std::wstring wCacheExtension = s2ws(GetFileExtension(file1));
+			measure->property.ext = wCacheExtension;
+			measure->property.nameandext = wCacheName + L"." + wCacheExtension;
+			measure->property.wholepath = L"";
+			measure->useNewStyle = 1;
+			measure->allowNonstorage = false;
+			measure->property.path = s2ws(file1);
+			measure->filefrom = s2ws(file1);
+			measure->fileto = s2ws(file2);
+			measure->scaleto = scale1;
+			std::wstring wCachePathFrom = s2ws(GetFullPath(file1));
+			measure->fileInitDir = wCachePathFrom + L"\\";
+
+
+
+			std::cout << "all code was running without error." << endl;
+
+			if ((file1 != "") && (file2 != "")) {
+				GetIcon(measure, nullptr);
+			}
+			else {
+				std::cout << "error: type -help for more information.";
+			}
+
+			return 0;
+		} else if (command1 == "-auto-global") {
 
 		std::string makepath = ws2s(ExePath()) + "\\Temp\\";
-		_mkdir(makepath.c_str());
+		std::string returnnothing;
+		returnnothing = _mkdir(makepath.c_str());
+
+
+		std::string makepath2 = ws2s(ExePath()) + "\\Temp Icons\\";
+		returnnothing = _mkdir(makepath2.c_str());
 
 		std::cout << endl << "temp directory is: " << makepath.c_str() << endl;
+		std::cout << endl << "temp icons directory is: " << makepath2.c_str() << endl;
+
 		std::string file1 = argv[2];
 
 
@@ -230,11 +425,11 @@ int main(int argc, char* argv[], char* envp[]) {
 		bool fileexist = exists_test3(file1);
 		std::cout << "--------------------------------------------------" << endl;
 		if (fileexist == 1) {
-			std::cout << "the file exist. go on with progres." << endl;
+			std::cout << "the file exist. go on with progress." << endl;
 			std::cout << "--------------------------------------------------" << endl;
 		}
 		else {
-			std::cout << "the file does not exist, cancel progres."  << endl;
+			std::cout << "the file does not exist, cancel progress." << endl;
 			std::cout << "--------------------------------------------------" << endl;
 			return 0;
 		}
@@ -249,29 +444,27 @@ int main(int argc, char* argv[], char* envp[]) {
 		std::cout << "drive letter we are working with: " << driveletter << endl;
 		std::string totalcachepath = makepath + driveletter + cachedir;
 
-		std::string file2 = totalcachepath + GetFileName(file1) + "." + GetFileExtension(file1);
+		std::string file2 = makepath2 + "." + GetFileExtension(file1);
 
-		fileexist = exists_test3(file2 + ".png");
 
-		if (fileexist == 1) {
-			std::cout << "cache icon does exist, aborting mission." << endl;
-			return 0;
-		} 
-		else {
-			std::cout << "cache icon does not exist. trying to create one." << endl;
-		}
+
+		std:cout << "the path of the cache file is: " << file2 + ".png" << endl;
+
+
+
+
 
 		std::cout << "--------------------------------------------------" << endl;
 		for (int n = 4; n < totalcachepath.length(); n++) {
 			if (totalcachepath.substr(n, 1) == "\\") {
 				std::cout << totalcachepath.substr(0, n) << endl;
-				std::cout << "dir made: " <<_mkdir(totalcachepath.substr(0, n).c_str()) << endl;
+				std::cout << "dir made: " << _mkdir(totalcachepath.substr(0, n).c_str()) << endl;
 			};
 		}
 		std::cout << "--------------------------------------------------" << endl;
 
-		std::string textlink = file2 + ".png.txt";
-		std::string iconlink = file2 + ".png";
+		std::string textlink = totalcachepath + GetFileName(file1) + "." + GetFileExtension(file1) + ".png.txt";
+		std::string iconlink = makepath2 + "." + GetFileExtension(file1) + ".png";
 
 		fileexist = exists_test3(textlink);
 
@@ -287,6 +480,18 @@ int main(int argc, char* argv[], char* envp[]) {
 		myfile.open(textlink);
 		myfile << iconlink;
 		myfile.close();
+
+
+
+		fileexist = exists_test3(file2 + ".png");
+
+		if (fileexist == 1) {
+			std::cout << "cache icon does exist, aborting mission." << endl;
+			return 0;
+		}
+		else {
+			std::cout << "cache icon does not exist. trying to create one." << endl;
+		}
 
 		std::string command2 = "-scale";
 		int scale1 = 256;
@@ -342,7 +547,6 @@ int main(int argc, char* argv[], char* envp[]) {
 		}
 
 		return 0;
-
 	} else if (command1 == "-extract") {
 
 
