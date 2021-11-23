@@ -168,6 +168,7 @@ string GetFileName(const string& s) {
 		string rawname = filename.substr(0, lastindex);
 		return(rawname);
 	}
+	return "";
 }
 
 std::string GetFullPath(const std::string& fname)
@@ -200,11 +201,8 @@ inline bool exists_test3(const std::string& name) {
 }
 
 int main(int argc, char* argv[], char* envp[]) {
-		
 	std::string command1 = argv[1];
-	
 	if (command1 == "-help") {
-
 		std::cout << "\n";
 		std::cout << "type -extract \"drive:path\\filenamefrom.extension\" \"drive:\\cachepath\\fileto.extension\" -scale 256";
 		std::cout << "\n";
@@ -215,13 +213,80 @@ int main(int argc, char* argv[], char* envp[]) {
 		std::cout << "the -scale can be from 16, 32, 48 to 256. sorry 64 and 128 is not possible.";
 		std::cout << "if you fill in 64 it will be 48. and if you fill in 128 it will be automaticly 256.";
 		std::cout << "\n";
-	} else if (command1 == "-safe-ffmpeg-wrapper") {
+	} else if (command1 == "-safe-ffmpeg-wrapper-video") {
 
+		std::string makepath = ws2s(ExePath()) + "\\Temp\\";
+		std::string returnnothing;
+		returnnothing = _mkdir(makepath.c_str());
+		std::string makepath2 = ws2s(ExePath()) + "\\Temp Icons\\";
+		returnnothing = _mkdir(makepath2.c_str());
+		//std::cout << endl << "temp directory is: " << makepath.c_str() << endl;
+		//std::cout << endl << "temp icons directory is: " << makepath2.c_str() << endl;
 
+		std::string file1 = argv[2];
+		std::cout << "file to extract: " + file1 << std::endl;
+		bool fileexist = exists_test3(file1);
+		std::cout << "--------------------------------------------------" << endl;
+		if (fileexist == 1) {
+			std::cout << "the file exist. go on with progres." << endl;
+			std::cout << "--------------------------------------------------" << endl;
+		}
+		else {
+			std::cout << "the file does not exist, cancel progres." << endl;
+			std::cout << "--------------------------------------------------" << endl;
+			return 0;
+		}
 
+		std::string tempdirectory = GetFullPath(file1) + "\\";
+		std::cout << "directory of the file: " << tempdirectory << endl;
+
+		std::string driveletter = tempdirectory.substr(0, 1);
+		std::size_t position = tempdirectory.find(":") + 1;
+		std::string cachedir = tempdirectory.substr(position);
+		std::cout << "drive letter we are working with: " << driveletter << endl;
+		std::string totalcachepath = makepath + driveletter + cachedir;
+
+		std::string file2 = totalcachepath + GetFileName(file1) + "." + GetFileExtension(file1);
+
+		fileexist = exists_test3(file2 + ".png");
+
+		if (fileexist == 1) {
+			std::cout << "cache icon does exist, aborting mission." << endl;
+			return 0;
+		}
+		else {
+			std::cout << "cache icon does not exist. trying to create one." << endl;
+		}
+
+		std::cout << "--------------------------------------------------" << endl;
+		for (int n = 4; n < totalcachepath.length(); n++) {
+			if (totalcachepath.substr(n, 1) == "\\") {
+				std::cout << totalcachepath.substr(0, n) << endl;
+				std::cout << "dir made: " << _mkdir(totalcachepath.substr(0, n).c_str()) << endl;
+			};
+		}
+		std::cout << "--------------------------------------------------" << endl;
+
+		std::string textlink = file2 + ".png.txt";
+		std::string iconlink = file2 + ".png";
+
+		fileexist = exists_test3(textlink);
+
+		if (fileexist == 1) {
+			std::cout << "cache link does exist, aborting mission." << endl;
+			return 0;
+		}
+		else {
+			std::cout << "cache link does not exist. trying to create one." << endl;
+		}
+
+		std::string argffmpeg = ws2s(ExePath()) + "\\ffmpeg.exe";
+		argffmpeg = argffmpeg + " -hide_banner -loglevel error -ss 20 -n -i ";
+		argffmpeg = argffmpeg +'\"' + file1 + '\"' + " -r 1 -frames 1 -vf scale=256:-1 " + '\"' + iconlink + '\"';
+		
+		system(argffmpeg.c_str());
+		std::cout << argffmpeg << endl;
 	} else if (command1 == "-create-cache-subfolders") {
-
-		std::cout << "---------------starting something--------------" << endl;
 		std::string file1 = argv[2];
 		std::cout << file1 << endl;
 		std::string makepath = ws2s(ExePath());
