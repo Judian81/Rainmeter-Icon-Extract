@@ -22,3 +22,4 @@ this is the quality of the extracted icon.
 
 ![icon extracted lnk](https://user-images.githubusercontent.com/46109964/142717523-3a641ad2-fab1-4513-9c3e-8ba0600da38e.png)
 
+check IconExtract.bat for the best option to use.
