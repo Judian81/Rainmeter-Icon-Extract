@@ -8,7 +8,8 @@ this is the command line options:
 2. call IconExtract.exe -help
 
 
-still in development.
+this is the unsave way to do this. but you have full controle over what you are doing.
+this could also be used without rainmeter.
 
 command line to create a shortcut from a file.
 
@@ -22,4 +23,3 @@ this is the quality of the extracted icon.
 
 ![icon extracted lnk](https://user-images.githubusercontent.com/46109964/142717523-3a641ad2-fab1-4513-9c3e-8ba0600da38e.png)
 
-check IconExtract.bat for the best option to use.
