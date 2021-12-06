@@ -33,3 +33,8 @@ this will make a icon from a exe file or an url file. and be stored in the cache
 this will make a icon from every file that are no icons from extracted. and be stored in the cache path automatically.
 
 9. call IconExtract.exe -help
+
+
+![image](https://user-images.githubusercontent.com/46109964/144929607-21772bbd-6e55-44c9-a18f-1145494ad7e7.png)
+
+
