@@ -39,3 +39,6 @@ this will make a icon from every file that are no icons from extracted. and be s
 ![image](https://user-images.githubusercontent.com/46109964/144929607-21772bbd-6e55-44c9-a18f-1145494ad7e7.png)
 
 
+as you can see, there will be made thumbnail for video, music and a picture file.
+also you can get the the icon from a exe, lnk and url file.
+if there is no personal icon. then you get the icon from the file type it self.
