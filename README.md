@@ -36,7 +36,8 @@ this will make a icon from every file that are no icons from extracted. and be s
 
 
 
-![image](https://user-images.githubusercontent.com/46109964/144929607-21772bbd-6e55-44c9-a18f-1145494ad7e7.png)
+![file browser](https://user-images.githubusercontent.com/46109964/160290028-c177da72-057e-4ae0-aff5-5fed599e083c.png)
+
 
 
 as you can see, there will be made thumbnail for video, music and a picture file.
