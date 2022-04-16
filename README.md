@@ -43,3 +43,9 @@ this will make a icon from every file that are no icons from extracted. and be s
 as you can see, there will be made thumbnail for video, music and a picture file.
 also you can get the the icon from a exe, lnk and url file.
 if there is no personal icon. then you get the icon from the file type it self.
+
+
+
+FolderView
+
+i try to make this as save as possible. because it makes files and folders i made it like the way it can only be saved in the folder of the IconExtract.exe folder. also what is true is i used the ffmpeg.exe file and try to keep it save in it own circle. you can download this on http://ffmpeg.org/download.html. there are a lot of files to be downloaded from. but you only need to download the package were there are only exe files in. and if you have that file you only need the ffmpeg.exe file to be extracted in the AddOn folder. on this way you can save icons from video, music and picture files. i already downloaded the file and put it in AddOn folder. but if you want to be sure it came from the right resource or want an updated version. go to. http://ffmpeg.org/download.html.
