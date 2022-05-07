@@ -49,3 +49,6 @@ if there is no personal icon. then you get the icon from the file type it self.
 File Browser
 
 i try to make this as save as possible. because it makes files and folders i made it like the way it can only be saved in the folder of the IconExtract.exe folder. also what is true is i used the ffmpeg.exe file and try to keep it save in it own circle. you can download this on http://ffmpeg.org/download.html. there are a lot of files to be downloaded from. but you only need to download the package were there are only exe files in. and if you have that file you only need the ffmpeg.exe file to be extracted in the AddOn folder. on this way you can save icons from video, music and picture files. i already downloaded the file and put it in AddOn folder. but if you want to be sure it came from the right resource or want an updated version. go to. http://ffmpeg.org/download.html.
+
+
+if you want to comment. the origional post can be found here. https://forum.rainmeter.net/viewtopic.php?p=206612&sid=15f83bd089c9a222f639d766c74dcecc#p206606
